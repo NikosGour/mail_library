@@ -1,0 +1,11 @@
+services:
+  mailpit:
+    image: axllent/mailpit
+    volumes:
+      - mailpit_data:/data
+    ports:
+      - 8025:8025
+      - 1025:1025
+
+volumes:
+  mailpit_data:
