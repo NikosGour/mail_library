@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/NikosGour/logging/log"
 )
 
 type SMTPCommand = string
@@ -69,7 +71,9 @@ loop:
 }
 
 func RunSMTPCommand(conn io.ReadWriter, command SMTPCommand, args ...string) error {
-	command_to_run := command + " " + strings.Join(args, " ") + "\r\n"
+	command_to_run := string(command + " " + strings.Join(args, " ") + "\r\n")
+	log.Debug("sent command: `%s`", Unescape(command_to_run))
+
 	n, err := conn.Write([]byte(command_to_run))
 	if err != nil {
 		return fmt.Errorf("on write: %w", err)
