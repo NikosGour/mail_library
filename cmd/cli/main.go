@@ -2,11 +2,11 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"net"
 	"os"
 
 	"github.com/NikosGour/logging/log"
+	"github.com/NikosGour/mail_library/internal"
 )
 
 func main() {
@@ -19,42 +19,38 @@ func main() {
 
 	reader := bufio.NewReader(conn)
 
-	res, err := reader.ReadString('\n')
+	responses := make(chan string)
+	errCh := make(chan error)
+	go internal.ReadResponses(responses, reader, errCh)
+	internal.ResponseHelper(responses, errCh,
+		func(res string) { log.Debug("SERVER: %s", res) },
+		func(err error) { log.Fatal("on server read: %s", err) },
+	)
+
+	err = internal.RunExtendedHelloCommand(conn)
 	if err != nil {
-		log.Fatal("on read: %v", err)
+		log.Fatal("on RunHelloCommand: %v", err)
 	}
-	log.Debug("res: %v", res)
 
-	n, err := conn.Write([]byte("EHLO localhost\r\n"))
+	responses = make(chan string)
+	errCh = make(chan error)
+	go internal.ReadResponses(responses, reader, errCh)
+	internal.ResponseHelper(responses, errCh,
+		func(res string) { log.Debug("SERVER: %s", res) },
+		func(err error) { log.Fatal("on server read: %s", err) },
+	)
+
+	err = internal.RunQuitCommand(conn)
 	if err != nil {
-		log.Fatal("on write: %v", err)
+		log.Fatal("on RunQuitCommand: %v", err)
 	}
 
-	if n <= 0 {
-		log.Fatal("no bytes read")
-	}
-	for {
-		response, err := reader.ReadString('\n')
-		if err != nil {
-			panic(err)
-		}
+	responses = make(chan string)
+	errCh = make(chan error)
+	go internal.ReadResponses(responses, reader, errCh)
+	internal.ResponseHelper(responses, errCh,
+		func(res string) { log.Debug("SERVER: %s", res) },
+		func(err error) { log.Fatal("on server read: %s", err) },
+	)
 
-		fmt.Print("SERVER: ", response)
-
-		// SMTP multiline responses have '-' after the status code.
-		// The final response has a space.
-		if len(response) >= 4 && response[3] == ' ' {
-			break
-		}
-	}
-
-	// Quit
-	fmt.Fprintf(conn, "QUIT\r\n")
-
-	res, err = reader.ReadString('\n')
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Print("SERVER: ", res)
 }
