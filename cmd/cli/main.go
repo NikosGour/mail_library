@@ -52,7 +52,32 @@ func main() {
 		func(err error) { log.Fatal("on server read: %s", err) },
 	)
 
-	err = internal.RunMailCommand(conn)
+	err = internal.RunMailCommand(conn, "FROM:<nikosgournak@gmail.com>")
+	if err != nil {
+		log.Fatal("on RunHelloCommand: %v", err)
+	}
+
+	responses = make(chan string)
+	errCh = make(chan error)
+	go internal.ReadResponses(responses, reader, errCh)
+	internal.ResponseHelper(responses, errCh,
+		func(res string) { log.Debug("SERVER: %s", res) },
+		func(err error) { log.Fatal("on server read: %s", err) },
+	)
+	err = internal.RunRecipientCommand(conn, "TO:<sakisng@gmail.com>")
+	if err != nil {
+		log.Fatal("on RunHelloCommand: %v", err)
+	}
+
+	responses = make(chan string)
+	errCh = make(chan error)
+	go internal.ReadResponses(responses, reader, errCh)
+	internal.ResponseHelper(responses, errCh,
+		func(res string) { log.Debug("SERVER: %s", res) },
+		func(err error) { log.Fatal("on server read: %s", err) },
+	)
+
+	err = internal.RunDataCommand(conn, "hello sakis from nikos\r\n.\r\n")
 	if err != nil {
 		log.Fatal("on RunHelloCommand: %v", err)
 	}

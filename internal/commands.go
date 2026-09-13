@@ -16,6 +16,7 @@ const (
 	COMMAND_HELLO          SMTPCommand = "HELO"
 	COMMAND_MAIL           SMTPCommand = "MAIL"
 	COMMAND_RECIPIENT      SMTPCommand = "RCPT"
+	COMMAND_DATA           SMTPCommand = "DATA"
 	COMMAND_RESET          SMTPCommand = "RSET"
 	COMMAND_VERIFY         SMTPCommand = "VRFY"
 	COMMAND_EXPAND         SMTPCommand = "EXPN"
@@ -86,42 +87,46 @@ func RunSMTPCommand(conn io.ReadWriter, command SMTPCommand, args ...string) err
 	return nil
 }
 
-func RunHelloCommand(conn io.ReadWriter) error {
-	return RunSMTPCommand(conn, COMMAND_HELLO)
+func RunHelloCommand(conn io.ReadWriter, args ...string) error {
+	return RunSMTPCommand(conn, COMMAND_HELLO, args...)
 }
 
-func RunExtendedHelloCommand(conn io.ReadWriter) error {
-	return RunSMTPCommand(conn, COMMAND_EXTENDED_HELLO)
+func RunExtendedHelloCommand(conn io.ReadWriter, args ...string) error {
+	return RunSMTPCommand(conn, COMMAND_EXTENDED_HELLO, args...)
 }
 
-func RunNoopCommand(conn io.ReadWriter) error {
-	return RunSMTPCommand(conn, COMMAND_NOOP)
+func RunNoopCommand(conn io.ReadWriter, args ...string) error {
+	return RunSMTPCommand(conn, COMMAND_NOOP, args...)
 }
 
-func RunQuitCommand(conn io.ReadWriter) error {
-	return RunSMTPCommand(conn, COMMAND_QUIT)
+func RunQuitCommand(conn io.ReadWriter, args ...string) error {
+	return RunSMTPCommand(conn, COMMAND_QUIT, args...)
 }
 
-func RunHelpCommand(conn io.ReadWriter) error {
-	return RunSMTPCommand(conn, COMMAND_HELP)
+func RunHelpCommand(conn io.ReadWriter, args ...string) error {
+	return RunSMTPCommand(conn, COMMAND_HELP, args...)
 }
 
-func RunMailCommand(conn io.ReadWriter) error {
-	return RunSMTPCommand(conn, COMMAND_MAIL)
+func RunMailCommand(conn io.ReadWriter, args ...string) error {
+	return RunSMTPCommand(conn, COMMAND_MAIL, args...)
 }
 
-func RunRecipientCommand(conn io.ReadWriter) error {
-	return RunSMTPCommand(conn, COMMAND_RECIPIENT)
+func RunRecipientCommand(conn io.ReadWriter, args ...string) error {
+	return RunSMTPCommand(conn, COMMAND_RECIPIENT, args...)
 }
 
-func RunExpandCommand(conn io.ReadWriter) error {
-	return RunSMTPCommand(conn, COMMAND_EXPAND)
+func RunDataCommand(conn io.ReadWriter, args ...string) error {
+	return RunSMTPCommand(conn, COMMAND_DATA, args...)
 }
 
-func RunResetCommand(conn io.ReadWriter) error {
-	return RunSMTPCommand(conn, COMMAND_RESET)
+func RunExpandCommand(conn io.ReadWriter, args ...string) error {
+	return RunSMTPCommand(conn, COMMAND_EXPAND, args...)
 }
 
-func RunVerifyCommand(conn io.ReadWriter) error {
-	return RunSMTPCommand(conn, COMMAND_VERIFY)
+func RunResetCommand(conn io.ReadWriter, args ...string) error {
+	return RunSMTPCommand(conn, COMMAND_RESET, args...)
+}
+
+func RunVerifyCommand(conn io.ReadWriter, args ...string) error {
+	return RunSMTPCommand(conn, COMMAND_VERIFY, args...)
 }
